@@ -21,7 +21,7 @@
 filter="*"
 
 # get the arguments
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
     key="$1"
 
     case $key in
@@ -94,7 +94,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ ! "$match" ]; then
-    echo "Please supply a match regex"
+    echo "Please supply a match regex!"
     exit 1
 fi
 

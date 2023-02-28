@@ -16,4 +16,8 @@ RUN apt-get update && \
 COPY "entrypoint.sh" "/entrypoint.sh"
 COPY "git-filter-repo" "/git-filter-repo"
 
+RUN chmod +x /entrypoint.sh
+RUN chmod +x /git-filter-repo
+
+
 ENTRYPOINT ["/entrypoint.sh"]

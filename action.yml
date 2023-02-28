@@ -37,26 +37,25 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    [
-      '--package-json',
-      '${{ inputs.package-json }}',
-      '--username',
-      '${{ inputs.username }}',
-      '--org',
-      '${{ inputs.org }}',
-      '--token',
-      '${{ inputs.token }}',
-      '--match',
-      '${{ inputs.match }}',
-      '--filter',
-      '${{ inputs.filter }}',
-      '--meta-json',
-      '${{ inputs.meta-json }}',
-      '--name',
-      '${{ inputs.name }}',
-      '--description',
-      '${{ inputs.description }}',
-      '--topics',
-      '${{ inputs.topics }}',
-    ]
+    - '--package-json'
+    - '${{ inputs.package-json }}'
+    - '--username'
+    - '${{ inputs.username }}'
+    - '--org'
+    - '${{ inputs.org }}'
+    - '--token'
+    - '${{ inputs.token }}'
+    - '--match'
+    - '${{ inputs.match }}'
+    - '--filter'
+    - '${{ inputs.filter }}'
+    - '--meta-json'
+    - '${{ inputs.meta-json }}'
+    - '--name'
+    - '${{ inputs.name }}'
+    - '--description'
+    - '${{ inputs.description }}'
+    - '--topics'
+    - '${{ inputs.topics }}'
+
 author: 'Thomas F. K. Jorna'
