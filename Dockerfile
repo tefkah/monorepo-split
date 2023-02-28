@@ -13,8 +13,7 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git 
 
-COPY "entrypoint.sh" "/entrypoint.sh"
-COPY "git-filter-repo" "/git-filter-repo"
+COPY . .
 
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /git-filter-repo
