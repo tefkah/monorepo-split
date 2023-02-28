@@ -154,6 +154,8 @@ git config user.name "$username"
 git config --global credential.helper "store --file=.git/credentials"
 # NO MASTER
 git config --global init.defaultBranch main
+git config --global --add safe.directory /github/workspace/.git
+git config --global --add safe.directory /github/workspace
 
 # remove all other branches than main
 git for-each-ref --format '%(refname:short)' refs/heads | grep -v "master\|main" | xargs git branch -D
