@@ -13,6 +13,8 @@ RUN git config --system --add safe.directory /github/workspace
 
 RUN git config --system --add safe.directory /tmp/monorepo_split/build_directory
 
+RUN git config --global init.defaultBranch main
+
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git 
