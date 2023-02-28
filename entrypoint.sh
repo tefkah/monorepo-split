@@ -219,6 +219,8 @@ for subrepo in $subrepos; do
 
     git init
 
+    git config --global --add safe.directory /github/workspace/$subrepo_dir
+
     # git-filter-repo it
     $base/git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"
     echo '$base/git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"'
