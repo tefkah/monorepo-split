@@ -9,15 +9,18 @@ LABEL com.github.actions.description="Automatically push subdirectories in a mon
 LABEL com.github.actions.icon="package"
 LABEL com.github.actions.color="purple"
 
-RUN git config --system --add safe.directory /github/workspace
-
-RUN git config --system --add safe.directory /tmp/monorepo_split/build_directory
-
-RUN git config --global init.defaultBranch main
 
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git 
+
+
+RUN git config --system --add safe.directory /github/workspace
+RUN git config --system --add safe.directory /github/workspace/.git
+
+RUN git config --system --add safe.directory /tmp/monorepo_split/build_directory
+
+RUN git config --global init.defaultBranch main
 
 COPY git-filter-repo /git-filter-repo
 COPY entrypoint.sh /entrypoint.sh

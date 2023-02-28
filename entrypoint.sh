@@ -152,6 +152,8 @@ git config user.email "tefkah-actions-monorepo-split@example.org"
 git config user.name "$username"
 # set token as git password
 git config --global credential.helper "store --file=.git/credentials"
+# NO MASTER
+git config --global init.defaultBranch main
 
 # remove all other branches than main
 git for-each-ref --format '%(refname:short)' refs/heads | grep -v "master\|main" | xargs git branch -D
