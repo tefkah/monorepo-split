@@ -25,7 +25,6 @@ RUN git config --global init.defaultBranch main
 COPY git-filter-repo /git-filter-repo
 COPY entrypoint.sh /entrypoint.sh
 
-COPY . .
 
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /git-filter-repo
