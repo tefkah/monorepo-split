@@ -263,7 +263,7 @@ for subrepo in $subrepos; do
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $token" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/$username/$subrepo_name -d "{\"description\":\"$description\"}"
+            https://api.github.com/repos/$username/$subrepo_name -d "{\"description\":\"$pack_json_description\"}"
     fi
 
     # push the subrepo to github
