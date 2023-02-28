@@ -19,6 +19,8 @@ RUN apt-get update && \
 
 COPY . .
 
+RUN ls
+
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /git-filter-repo
 

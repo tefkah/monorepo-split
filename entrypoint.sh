@@ -19,6 +19,8 @@
 # --org, string, use the org name instead of the username
 # --help, boolean, print help
 
+set -x
+
 filter="*"
 
 # get the arguments
