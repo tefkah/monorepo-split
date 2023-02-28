@@ -199,8 +199,11 @@ for subrepo in $subrepos; do
     if [ $package_json ]; then
         echo "Using package.json name field"
         package_json_name=$(cat $subrepo/$package_json | grep -oP '"name": "\K[^"]+' | sed -e 's/\///')
+        echo $package_json_name
         package_json_topics=$(cat $subrepo/$package_json | sed -z "s/\n//g" | grep -oP '"keywords": \[\K[^]]+')
+        echo $package_json_topics
         package_json_description=$(cat $subrepo/$package_json | grep -oP '"description": "\K[^"]+')
+        echo $package_json_description
 
         if [ $name ]; then
             subrepo_name=$package_json_name
@@ -222,8 +225,8 @@ for subrepo in $subrepos; do
     git config --global --add safe.directory /github/workspace/$subrepo_dir
 
     # git-filter-repo it
-    $base/git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"
-    echo '$base/git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"'
+    /git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"
+    echo '/git-filter-repo --subdirectory-filter $subrepo_dir --force --source "$base/.git" --target "$base/$subrepo_dir/.git"'
 
     git add .
 
