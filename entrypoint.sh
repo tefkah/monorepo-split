@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 # find all the subdirectories with a package.json file
 # and create a list of them
 # then split the repo into those subdirectories
