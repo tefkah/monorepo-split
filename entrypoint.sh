@@ -275,8 +275,8 @@ for subrepo in $subrepos; do
 
     # push the subrepo to github
     git remote add origin "$gitrepostart$subrepo_name.git"
-    git push -u origin --all
-    git push -u origin --tags
+    git push -u origin --all --force
+    git push -u origin --tags --force
 
     cd $base
 done
