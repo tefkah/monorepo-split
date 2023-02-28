@@ -165,7 +165,7 @@ if [ $package_json ]; then
     echo "Only using subdirectories with a $package_json file"
     echo "$match"
     echo "$filter"
-    subrepos=$(echo $match | grep -v "$filter")
+    subrepos=$(echo $match)
     echo $subrepos
     if [ ! "$subrepos" ]; then
         echo "No subrepos found"
@@ -182,7 +182,7 @@ if [ $package_json ]; then
     $subrepos=$temp
 
 else
-    subrepos=$($match | grep -v "$filter")
+    subrepos=$(echo $match)
 fi
 
 # loop through the subrepos
