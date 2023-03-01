@@ -44,10 +44,10 @@ var __async = (__this, __arguments, generator) => {
 };
 
 // src/entrypoint.ts
-var import_core2 = __toESM(require("@actions/core"));
+var import_core = __toESM(require("@actions/core"));
 
 // src/split-repo.ts
-var import_core = __toESM(require("@actions/core"));
+var core = __toESM(require("@actions/core"));
 var import_glob = require("glob");
 var import_plugin_throttling = require("@octokit/plugin-throttling");
 var import_path = __toESM(require("path"));
@@ -56,17 +56,15 @@ var import_child_process = require("child_process");
 var import_util = require("util");
 var import_rest = require("@octokit/rest");
 var import_python_shell = require("python-shell");
-var _a;
-var error = typeof ((_a = import_core.default) == null ? void 0 : _a.setFailed) === "function" ? import_core.default.setFailed : console.error;
-var _a2;
-var log = typeof ((_a2 = import_core.default) == null ? void 0 : _a2.info) === "function" ? import_core.default.info : console.log;
-var _a3;
-var warn = typeof ((_a3 = import_core.default) == null ? void 0 : _a3.warning) === "function" ? import_core.default.warning : console.warn;
+var error = typeof (core == null ? void 0 : core.setFailed) === "function" ? core.setFailed : console.error;
+var log = typeof (core == null ? void 0 : core.info) === "function" ? core.info : console.log;
+var warn = typeof (core == null ? void 0 : core.warning) === "function" ? core.warning : console.warn;
 function splitRepo(options) {
   return __async(this, null, function* () {
-    var _a4, _b;
+    var _a, _b;
     const {
       username: username2,
+      force: force2,
       token: token2,
       match: match2,
       filter: filter2,
@@ -110,7 +108,7 @@ Options:
     }
     const orgOrUser = org2 || username2;
     if (!orgOrUser) {
-      import_core.default.setFailed("Please supply a username or org");
+      core.setFailed("Please supply a username or org");
       return;
     }
     log(orgOrUser);
@@ -147,7 +145,7 @@ Options:
     const meta = packageJson2 ? "package.json" : metaJson2;
     const existingRepos = org2 ? yield octokit.repos.listForOrg({ org: orgOrUser }) : yield octokit.repos.listForAuthenticatedUser();
     log(existingRepos);
-    const existingRepoNames = (_b = (_a4 = existingRepos == null ? void 0 : existingRepos.data) == null ? void 0 : _a4.map((repo) => repo.name)) != null ? _b : [];
+    const existingRepoNames = (_b = (_a = existingRepos == null ? void 0 : existingRepos.data) == null ? void 0 : _a.map((repo) => repo.name)) != null ? _b : [];
     log(existingRepoNames);
     const globs = match2.split(" ");
     const base = root2 ? import_path.default.join(process.cwd(), root2) : process.cwd();
@@ -158,7 +156,7 @@ Options:
     log(subrepos);
     const fitleredSubrepos = filter2 ? subrepos.filter((subrepo) => {
       if (subrepo.match(filter2)) {
-        import_core.default.debug(`Filtered out ${subrepo}`);
+        core.debug(`Filtered out ${subrepo}`);
         return false;
       }
       return true;
@@ -188,7 +186,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     log(base);
     const loop = yield Promise.all(
       fitleredSubrepos.map((subrepo) => __async(this, null, function* () {
-        var _a5;
+        var _a2;
         const subrepoDir = import_path.default.dirname(subrepo);
         const subrepoName = import_path.default.basename(subrepoDir.replace(meta != null ? meta : "", ""));
         const { stdout: touched } = yield execAsync(`
@@ -196,7 +194,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     git log -1 --name-only ${import_path.default.join(base, subrepoDir)}
   `);
         log(touched);
-        if (!touched && !dev) {
+        if (!touched && !dev && !force2) {
           log(
             `Skipping ${subrepoName} as it was not touched by the latest commit`
           );
@@ -223,7 +221,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
             subrepoDir
           )}`}
 `);
-          const gfrCommand = `${(_a5 = import_path.default.join(base, gitFilterRepo2)) != null ? _a5 : "/git-filter-repo"}`;
+          const gfrCommand = `${(_a2 = import_path.default.join(base, gitFilterRepo2)) != null ? _a2 : "/git-filter-repo"}`;
           log("Git-filter-repo command: ", gfrCommand);
           const fitlerRepo = yield import_python_shell.PythonShell.run(gfrCommand, {
             args: [
@@ -297,22 +295,24 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
 }
 
 // src/entrypoint.ts
-var username = import_core2.default.getInput("username");
-var token = import_core2.default.getInput("token", { required: true });
-var match = import_core2.default.getInput("match", { required: true });
-var filter = import_core2.default.getInput("filter") || "*";
-var packageJson = import_core2.default.getInput("package-json");
-var metaJson = import_core2.default.getInput("meta-json");
-var topics = import_core2.default.getInput("topics");
-var description = import_core2.default.getInput("description");
-var org = import_core2.default.getInput("org");
-var help = import_core2.default.getInput("help");
-var gitFilterRepo = import_core2.default.getInput("git-filter-repo");
-var source = import_core2.default.getInput("source");
-var root = import_core2.default.getInput("root");
+var username = import_core.default.getInput("username");
+var token = import_core.default.getInput("token", { required: true });
+var match = import_core.default.getInput("match", { required: true });
+var filter = import_core.default.getInput("filter") || "*";
+var packageJson = import_core.default.getInput("package-json");
+var metaJson = import_core.default.getInput("meta-json");
+var topics = import_core.default.getInput("topics");
+var description = import_core.default.getInput("description");
+var org = import_core.default.getInput("org");
+var help = import_core.default.getInput("help");
+var gitFilterRepo = import_core.default.getInput("git-filter-repo");
+var source = import_core.default.getInput("source");
+var root = import_core.default.getInput("root");
+var force = import_core.default.getInput("force");
 splitRepo({
   username,
   token,
+  force: Boolean(force),
   match,
   filter,
   packageJson: Boolean(packageJson),

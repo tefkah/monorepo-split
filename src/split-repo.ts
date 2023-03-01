@@ -1,4 +1,4 @@
-import core from "@actions/core"
+import * as core from "@actions/core"
 import github from "@actions/github"
 import { glob } from "glob"
 import { throttling } from "@octokit/plugin-throttling"
