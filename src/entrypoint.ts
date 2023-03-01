@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import core from "@actions/core"
+import * as core from "@actions/core"
 import { splitRepo } from "./split-repo"
 
 core?.setSecret("token")
