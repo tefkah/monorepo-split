@@ -41,4 +41,4 @@ RUN chmod +x entrypoint.js
 RUN chmod +x git-filter-repo
 
 
-ENTRYPOINT ["node", "entrypoint.js"]
+ENTRYPOINT ["node", "/entrypoint.js"]
