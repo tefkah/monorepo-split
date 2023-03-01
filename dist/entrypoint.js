@@ -143,7 +143,9 @@ Options:
       log("Using package.json file");
     }
     const meta = packageJson2 ? "package.json" : metaJson2;
-    const existingRepos = org2 ? yield octokit.repos.listForOrg({ org: orgOrUser }) : yield octokit.repos.listForAuthenticatedUser();
+    const existingRepos = org2 ? yield octokit.repos.listForOrg({ org: orgOrUser, per_page: 200 }) : yield octokit.repos.listForAuthenticatedUser({
+      per_page: 200
+    });
     log(existingRepos);
     const existingRepoNames = (_b = (_a = existingRepos == null ? void 0 : existingRepos.data) == null ? void 0 : _a.map((repo) => repo.name)) != null ? _b : [];
     log(existingRepoNames);
@@ -184,113 +186,116 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     }
     log(fitleredSubrepos);
     log(base);
-    const loop = yield Promise.all(
-      fitleredSubrepos.map((subrepo) => __async(this, null, function* () {
-        const subrepoDir = import_path.default.dirname(subrepo);
-        const subrepoName = import_path.default.basename(subrepoDir.replace(meta != null ? meta : "", ""));
-        const { stdout: touched } = yield execAsync(`
+    for (const subrepo of fitleredSubrepos) {
+      const subrepoDir = import_path.default.dirname(subrepo);
+      const subrepoName = import_path.default.basename(subrepoDir.replace(meta != null ? meta : "", ""));
+      const { stdout: touched } = yield execAsync(`
     cd ${base}
     git log -1 --name-only ${import_path.default.join(base, subrepoDir)}
   `);
-        log(touched);
-        if (!touched && !dev && !force2) {
-          log(
-            `Skipping ${subrepoName} as it was not touched by the latest commit`
-          );
-          return;
-        }
-        const metadata = meta ? JSON.parse(yield import_promises.default.readFile(import_path.default.join(base, subrepo), "utf8")) : {};
-        log(metadata);
-        const {
-          name: metaName,
-          description: metaDescription,
-          keywords: metaTopics
-        } = metadata;
-        const repoName = metaName || subrepoName;
-        log("base", base);
-        log(subrepo, import_path.default.join(base, subrepoDir));
-        try {
-          const { stdout: out, stderr: err } = yield execAsync(`
+      log(touched);
+      if (!touched && !dev && !force2) {
+        log(`Skipping ${subrepoName} as it was not touched by the latest commit`);
+        return;
+      }
+      const metadata = meta ? JSON.parse(yield import_promises.default.readFile(import_path.default.join(base, subrepo), "utf8")) : {};
+      log(metadata);
+      const {
+        name: metaName,
+        description: metaDescription,
+        keywords: metaTopics
+      } = metadata;
+      const repoName = metaName || subrepoName;
+      log("base", base);
+      log(subrepo, import_path.default.join(base, subrepoDir));
+      try {
+        const { stdout: out, stderr: err } = yield execAsync(`
     cd ${import_path.default.join(base, subrepoDir)}
 
     git init
 
     ${dev ? "" : `git config --global --add safe.directory ${import_path.default.join(
-            base,
-            subrepoDir
-          )}`}
+          base,
+          subrepoDir
+        )}`}
 `);
-          const gfrCommand = `${dev ? import_path.default.join(base, gitFilterRepo2) : "/git-filter-repo"}`;
-          const filterRepoArgs = [
-            "--subdirectory-filter",
-            subrepoDir,
-            "--force",
-            "--source",
-            import_path.default.join(base, source2 != null ? source2 : ".git"),
-            "--target",
-            import_path.default.join(base, subrepoDir, ".git")
-          ];
-          log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`);
-          const fitlerRepo = yield import_python_shell.PythonShell.run(gfrCommand, {
-            args: filterRepoArgs
-          });
-          log(fitlerRepo);
-          log(out);
-          log(err);
-          log("Finishd git-filter-repo");
-          const { stdout, stderr } = yield execAsync(
-            `
+        const gfrCommand = `${dev ? import_path.default.join(base, gitFilterRepo2) : "/git-filter-repo"}`;
+        const filterRepoArgs = [
+          "--subdirectory-filter",
+          subrepoDir,
+          "--force",
+          "--source",
+          import_path.default.join(base, source2 != null ? source2 : ".git"),
+          "--target",
+          import_path.default.join(base, subrepoDir, ".git")
+        ];
+        log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`);
+        const fitlerRepo = yield import_python_shell.PythonShell.run(gfrCommand, {
+          args: filterRepoArgs
+        });
+        log(fitlerRepo);
+        log(out);
+        log(err);
+        log("Finishd git-filter-repo");
+        const { stdout, stderr } = yield execAsync(
+          `
       git add .  ${import_path.default.join(base, subrepoDir)}
       `,
-            {
-              cwd: import_path.default.join(base, subrepoDir)
-            }
-          );
-          log(stdout);
-          log(stderr);
+          {
+            cwd: import_path.default.join(base, subrepoDir)
+          }
+        );
+        log(stdout);
+        log(stderr);
+      } catch (e) {
+        log(e);
+      }
+      if (!existingRepoNames.includes(repoName)) {
+        try {
+          org2 ? yield octokit.rest.repos.createInOrg({
+            org: orgOrUser,
+            name: repoName,
+            description: metaDescription
+          }) : yield octokit.rest.repos.createForAuthenticatedUser({
+            name: repoName,
+            description: metaDescription
+          });
         } catch (e) {
           log(e);
         }
-        if (!existingRepoNames.includes(repoName)) {
-          try {
-            yield octokit.rest.repos.createForAuthenticatedUser({
-              name: repoName
-            });
-          } catch (e) {
-            log(e);
-          }
-        }
-        if (topics2 && metaTopics) {
-          const replaceTopics = yield octokit.rest.repos.replaceAllTopics({
-            owner: orgOrUser,
-            repo: repoName,
-            names: metaTopics
-          });
-          log(replaceTopics);
-        }
-        if (description2 && metaDescription) {
-          const replacedDescription = yield octokit.rest.repos.update({
-            owner: orgOrUser,
-            repo: repoName,
-            description: metaDescription
-          });
-          log(replacedDescription);
-        }
-        try {
-          const { stderr, stdout } = yield execAsync(`
-    git remote add origin https://$username:${token2}@github.com/$orgOrUser/$repoName.git
+      }
+      let topicPromise;
+      let descriptionPromise;
+      if (topics2 && metaTopics) {
+        topicPromise = octokit.rest.repos.replaceAllTopics({
+          owner: orgOrUser,
+          repo: repoName,
+          names: metaTopics
+        });
+      }
+      if (description2 && metaDescription) {
+        descriptionPromise = octokit.rest.repos.update({
+          owner: orgOrUser,
+          repo: repoName,
+          description: metaDescription
+        });
+      }
+      const [topicResponse, descriptionResponse] = yield Promise.all([
+        topicPromise,
+        descriptionPromise
+      ]);
+      try {
+        const { stderr, stdout } = yield execAsync(`
+    git remote add origin https://${orgOrUser}:${token2}@github.com/${orgOrUser}/${repoName}.git
     git push -u origin main --force
 
     cd ${base}
     `);
-          log(stdout);
-          return stdout;
-        } catch (e) {
-          log(e);
-        }
-        return;
-      }))
-    );
+        log(stdout);
+      } catch (e) {
+        log(e);
+      }
+    }
   });
 }
 

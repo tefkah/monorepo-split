@@ -140,8 +140,10 @@ Options:
   const meta = packageJson ? "package.json" : metaJson
 
   const existingRepos = org
-    ? await octokit.repos.listForOrg({ org: orgOrUser })
-    : await octokit.repos.listForAuthenticatedUser()
+    ? await octokit.repos.listForOrg({ org: orgOrUser, per_page: 200 })
+    : await octokit.repos.listForAuthenticatedUser({
+        per_page: 200,
+      })
 
   log(existingRepos)
   const existingRepoNames = existingRepos?.data?.map((repo) => repo.name) ?? []
@@ -202,43 +204,40 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
   log(fitleredSubrepos)
 
   log(base)
-  const loop = await Promise.all(
-    fitleredSubrepos.map(async (subrepo) => {
-      const subrepoDir = path.dirname(subrepo)
-      // remove eventual `meta` file from the path
-      const subrepoName = path.basename(subrepoDir.replace(meta ?? "", ""))
+  for (const subrepo of fitleredSubrepos) {
+    const subrepoDir = path.dirname(subrepo)
+    // remove eventual `meta` file from the path
+    const subrepoName = path.basename(subrepoDir.replace(meta ?? "", ""))
 
-      // check if this repo is touched by the latest commit
-      const { stdout: touched } = await execAsync(`
+    // check if this repo is touched by the latest commit
+    const { stdout: touched } = await execAsync(`
     cd ${base}
     git log -1 --name-only ${path.join(base, subrepoDir)}
   `)
-      log(touched)
+    log(touched)
 
-      if (!touched && !dev && !force) {
-        log(
-          `Skipping ${subrepoName} as it was not touched by the latest commit`
-        )
-        return
-      }
+    if (!touched && !dev && !force) {
+      log(`Skipping ${subrepoName} as it was not touched by the latest commit`)
+      return
+    }
 
-      const metadata = meta
-        ? JSON.parse(await fs.readFile(path.join(base, subrepo), "utf8"))
-        : {}
+    const metadata = meta
+      ? JSON.parse(await fs.readFile(path.join(base, subrepo), "utf8"))
+      : {}
 
-      log(metadata)
-      const {
-        name: metaName,
-        description: metaDescription,
-        keywords: metaTopics,
-      } = metadata
+    log(metadata)
+    const {
+      name: metaName,
+      description: metaDescription,
+      keywords: metaTopics,
+    } = metadata
 
-      const repoName = metaName || subrepoName
+    const repoName = metaName || subrepoName
 
-      log("base", base)
-      log(subrepo, path.join(base, subrepoDir))
-      try {
-        const { stdout: out, stderr: err } = await execAsync(`
+    log("base", base)
+    log(subrepo, path.join(base, subrepoDir))
+    try {
+      const { stdout: out, stderr: err } = await execAsync(`
     cd ${path.join(base, subrepoDir)}
 
     git init
@@ -253,90 +252,98 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     }
 `)
 
-        const gfrCommand = `${
-          dev ? path.join(base, gitFilterRepo) : "/git-filter-repo"
-        }`
+      const gfrCommand = `${
+        dev ? path.join(base, gitFilterRepo) : "/git-filter-repo"
+      }`
 
-        const filterRepoArgs = [
-          "--subdirectory-filter",
-          subrepoDir,
-          "--force",
-          "--source",
-          path.join(base, source ?? ".git"),
-          "--target",
-          path.join(base, subrepoDir, ".git"),
-        ]
+      const filterRepoArgs = [
+        "--subdirectory-filter",
+        subrepoDir,
+        "--force",
+        "--source",
+        path.join(base, source ?? ".git"),
+        "--target",
+        path.join(base, subrepoDir, ".git"),
+      ]
 
-        log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`)
-        const fitlerRepo = await PythonShell.run(gfrCommand, {
-          args: filterRepoArgs,
-        })
+      log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`)
+      const fitlerRepo = await PythonShell.run(gfrCommand, {
+        args: filterRepoArgs,
+      })
 
-        log(fitlerRepo)
-        log(out)
-        log(err)
-        log("Finishd git-filter-repo")
+      log(fitlerRepo)
+      log(out)
+      log(err)
+      log("Finishd git-filter-repo")
 
-        const { stdout, stderr } = await execAsync(
-          `
+      const { stdout, stderr } = await execAsync(
+        `
       git add .  ${path.join(base, subrepoDir)}
       `,
-          {
-            cwd: path.join(base, subrepoDir),
-          }
-        )
+        {
+          cwd: path.join(base, subrepoDir),
+        }
+      )
 
-        log(stdout)
-        log(stderr)
+      log(stdout)
+      log(stderr)
+    } catch (e) {
+      log(e)
+    }
+
+    if (!existingRepoNames.includes(repoName)) {
+      try {
+        org
+          ? await octokit.rest.repos.createInOrg({
+              org: orgOrUser,
+              name: repoName,
+              description: metaDescription,
+            })
+          : await octokit.rest.repos.createForAuthenticatedUser({
+              name: repoName,
+              description: metaDescription,
+            })
       } catch (e) {
         log(e)
       }
+    }
 
-      if (!existingRepoNames.includes(repoName)) {
-        try {
-          await octokit.rest.repos.createForAuthenticatedUser({
-            name: repoName,
-          })
-        } catch (e) {
-          log(e)
-        }
-      }
+    let topicPromise
+    let descriptionPromise
+    if (topics && metaTopics) {
+      topicPromise = octokit.rest.repos.replaceAllTopics({
+        owner: orgOrUser,
+        repo: repoName,
+        names: metaTopics,
+      })
+    }
 
-      if (topics && metaTopics) {
-        const replaceTopics = await octokit.rest.repos.replaceAllTopics({
-          owner: orgOrUser,
-          repo: repoName,
-          names: metaTopics,
-        })
-        log(replaceTopics)
-      }
+    if (description && metaDescription) {
+      descriptionPromise = octokit.rest.repos.update({
+        owner: orgOrUser,
+        repo: repoName,
+        description: metaDescription,
+      })
+    }
 
-      if (description && metaDescription) {
-        const replacedDescription = await octokit.rest.repos.update({
-          owner: orgOrUser,
-          repo: repoName,
-          description: metaDescription,
-        })
-        log(replacedDescription)
-      }
+    const [topicResponse, descriptionResponse] = await Promise.all([
+      topicPromise,
+      descriptionPromise,
+    ])
 
-      try {
-        const { stderr, stdout } = await execAsync(`
-    git remote add origin https://$username:${token}@github.com/$orgOrUser/$repoName.git
+    try {
+      const { stderr, stdout } = await execAsync(`
+    git remote add origin https://${orgOrUser}:${token}@github.com/${orgOrUser}/${repoName}.git
     git push -u origin main --force
 
     cd ${base}
     `)
 
-        log(stdout)
-        return stdout
-      } catch (e) {
-        log(e)
-      }
-
-      return
-    })
-  )
+      log(stdout)
+    } catch (e) {
+      log(e)
+    }
+  }
 }
 /**
 # loop through the subrepos
