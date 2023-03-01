@@ -31,6 +31,7 @@ splitRepo({
   description: Boolean(description),
   org,
   root,
+  gitFilterRepo: "/git-filter-repo",
 })
 
 // Parse command line arguments using minimist

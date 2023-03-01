@@ -186,7 +186,6 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     log(base);
     const loop = yield Promise.all(
       fitleredSubrepos.map((subrepo) => __async(this, null, function* () {
-        var _a2;
         const subrepoDir = import_path.default.dirname(subrepo);
         const subrepoName = import_path.default.basename(subrepoDir.replace(meta != null ? meta : "", ""));
         const { stdout: touched } = yield execAsync(`
@@ -221,7 +220,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
             subrepoDir
           )}`}
 `);
-          const gfrCommand = `${(_a2 = import_path.default.join(base, gitFilterRepo2)) != null ? _a2 : "/git-filter-repo"}`;
+          const gfrCommand = `${dev ? import_path.default.join(base, gitFilterRepo2) : "/git-filter-repo"}`;
           log("Git-filter-repo command: ", gfrCommand);
           const fitlerRepo = yield import_python_shell.PythonShell.run(gfrCommand, {
             args: [
@@ -320,5 +319,6 @@ splitRepo({
   topics: Boolean(topics),
   description: Boolean(description),
   org,
-  root
+  root,
+  gitFilterRepo: "/git-filter-repo"
 });

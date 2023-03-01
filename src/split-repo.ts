@@ -254,7 +254,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
 `)
 
         const gfrCommand = `${
-          path.join(base, gitFilterRepo) ?? "/git-filter-repo"
+          dev ? path.join(base, gitFilterRepo) : "/git-filter-repo"
         }`
         log("Git-filter-repo command: ", gfrCommand)
         const fitlerRepo = await PythonShell.run(gfrCommand, {
