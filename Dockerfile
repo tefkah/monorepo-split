@@ -28,10 +28,13 @@ RUN git config --global init.defaultBranch main
 
 COPY git-filter-repo /git-filter-repo
 COPY dist/entrypoint.js /entrypoint.js
+COPY dist/entrypoint.js entrypoint.js
 COPY package.json /package.json
 
+RUN ls
 RUN node -v
 RUN npm install
+
 
 
 RUN chmod +x entrypoint.js
