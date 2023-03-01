@@ -259,7 +259,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
             log(e);
           }
         }
-        if (topics2) {
+        if (topics2 && metaTopics) {
           const replaceTopics = yield octokit.rest.repos.replaceAllTopics({
             owner: orgOrUser,
             repo: repoName,
@@ -267,7 +267,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
           });
           log(replaceTopics);
         }
-        if (description2) {
+        if (description2 && metaDescription) {
           const replacedDescription = yield octokit.rest.repos.update({
             owner: orgOrUser,
             repo: repoName,

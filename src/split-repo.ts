@@ -299,7 +299,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
         }
       }
 
-      if (topics) {
+      if (topics && metaTopics) {
         const replaceTopics = await octokit.rest.repos.replaceAllTopics({
           owner: orgOrUser,
           repo: repoName,
@@ -308,7 +308,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
         log(replaceTopics)
       }
 
-      if (description) {
+      if (description && metaDescription) {
         const replacedDescription = await octokit.rest.repos.update({
           owner: orgOrUser,
           repo: repoName,
