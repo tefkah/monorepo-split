@@ -1,0 +1,30 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = https://github.com/TrialAndErrorOrg/parsers.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	gh-resolved = base
+[branch "feat/ci"]
+	remote = origin
+	merge = refs/heads/feat/ci
+	github-pr-owner-number = "JournalOfTrialAndError#JOTE#8"
+[branch "feat/pdf"]
+	remote = origin
+	merge = refs/heads/feat/pdf
+	github-pr-owner-number = "JournalOfTrialAndError#JOTE#16"
+[branch "feat/reoff"]
+	remote = origin
+	merge = refs/heads/feat/reoff
+	github-pr-owner-number = "JournalOfTrialAndError#JOTE#17"
+[branch "fix/deploy"]
+	remote = origin
+	github-pr-owner-number = "TrialAndErrorOrg#parsers#51"
+	merge = refs/heads/fix/deploy
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main

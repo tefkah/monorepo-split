@@ -1,61 +1,40 @@
 # action.yml
-name: 'Split Monorepo'
-description: 'Split monorepo to many different repositories on GitHub'
+name: "Split Monorepo"
+description: "Split monorepo to many different repositories on GitHub"
 inputs:
   package-json: # id of input
-    description: 'Whether to only look for directories with a package.json file, and use the name field as the repository name'
-    default: ''
+    description: "Whether to only look for directories with a package.json file, and use the name field as the repository name"
+    default: ""
   username: # id of input
-    description: 'The username to use for the git config'
-    default: ''
+    description: "The username to use for the git config"
+    default: ""
   org:
-    description: 'The organization to use for the git config'
-    default: ''
+    description: "The organization to use for the git config"
+    default: ""
   token:
-    description: 'An access token with the required scopes. Namely, it needs to be able to create repositories and push to them, for either yourself or your org.'
+    description: "An access token with the required scopes. Namely, it needs to be able to create repositories and push to them, for either yourself or your org."
     required: true
   match:
-    description: 'A (series of space separated) glob(s) of which directories to split.'
+    description: "A (series of space separated) glob(s) of which directories to split."
     required: true
   filter:
-    description: 'A regex of which directories to exclude from splitting.'
+    description: "A regex of which directories to exclude from splitting."
     required: false
   meta-json:
-    description: 'A JSON file containing meta information about the repositories to be created.'
+    description: "A JSON file containing meta information about the repositories to be created."
     required: false
   name:
-    description: 'Whether or not to use the name field in the package.json file as the repository name.'
+    description: "Whether or not to use the name field in the package.json file as the repository name."
     required: false
   description:
-    description: 'Whether or not to use the description field in the package.json file as the repository description.'
+    description: "Whether or not to use the description field in the package.json file as the repository description."
     required: false
   topics:
-    description: 'Whether or not to use the keywords field in the package.json file as the repository topics.'
+    description: "Whether or not to use the keywords field in the package.json file as the repository topics."
     required: false
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - '--package-json'
-    - '${{ inputs.package-json }}'
-    - '--username'
-    - '${{ inputs.username }}'
-    - '--org'
-    - '${{ inputs.org }}'
-    - '--token'
-    - '${{ inputs.token }}'
-    - '--match'
-    - '${{ inputs.match }}'
-    - '--filter'
-    - '${{ inputs.filter }}'
-    - '--meta-json'
-    - '${{ inputs.meta-json }}'
-    - '--name'
-    - '${{ inputs.name }}'
-    - '--description'
-    - '${{ inputs.description }}'
-    - '--topics'
-    - '${{ inputs.topics }}'
+  using: "docker"
+  image: "Dockerfile"
 
-author: 'Thomas F. K. Jorna'
+author: "Thomas F. K. Jorna"
