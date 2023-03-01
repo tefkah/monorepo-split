@@ -299,7 +299,7 @@ core2 == null ? void 0 : core2.setSecret("token");
 var username = core2.getInput("username");
 var token = core2.getInput("token", { required: true });
 var match = core2.getInput("match", { required: true });
-var filter = core2.getInput("filter") || "*";
+var filter = core2.getInput("filter") || "";
 var packageJson = core2.getBooleanInput("package-json");
 var metaJson = core2.getInput("meta-json");
 var topics = core2.getBooleanInput("topics");
@@ -320,7 +320,5 @@ splitRepo({
   topics: Boolean(topics),
   description: Boolean(description),
   org,
-  gitFilterRepo,
-  source,
   root
 });

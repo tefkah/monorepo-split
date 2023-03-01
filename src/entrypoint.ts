@@ -8,7 +8,7 @@ core?.setSecret("token")
 const username: string | undefined = core.getInput("username")
 const token: string = core.getInput("token", { required: true })
 const match: string = core.getInput("match", { required: true })
-const filter: string | undefined = core.getInput("filter") || "*"
+const filter: string | undefined = core.getInput("filter") || ""
 const packageJson: boolean | undefined = core.getBooleanInput("package-json")
 const metaJson: string | undefined = core.getInput("meta-json")
 const topics: boolean | undefined = core.getBooleanInput("topics")
