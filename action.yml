@@ -4,7 +4,7 @@ description: "Split monorepo to many different repositories on GitHub"
 inputs:
   package-json: # id of input
     description: "Whether to only look for directories with a package.json file, and use the name field as the repository name"
-    default: ""
+    default: "false"
   username: # id of input
     description: "The username to use for the git config"
     default: ""
@@ -26,15 +26,19 @@ inputs:
   name:
     description: "Whether or not to use the name field in the package.json file as the repository name."
     required: false
+    default: "false"
   description:
     description: "Whether or not to use the description field in the package.json file as the repository description."
     required: false
+    default: "false"
   topics:
     description: "Whether or not to use the keywords field in the package.json file as the repository topics."
     required: false
+    default: "false"
   force:
     description: "Whether or not to split the repo even if there haven't been any changes in the directories to split."
     required: false
+    default: "false"
   root:
     description: "The root directory of the monorepo."
     required: false
