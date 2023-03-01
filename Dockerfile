@@ -1,8 +1,11 @@
 FROM ubuntu
 RUN apt-get update &&\
     apt-get install git -y &&\
-    apt-get install python -y &&\
-    apt-get install node -y
+    apt-get install python3 -y 
+
+RUN curl -sL https://deb.nodesource.com/setup_18.x -o /tmp/nodesource_setup.sh | bash
+
+RUN apt-get install nodejs -y
 
 LABEL repository="https://github.com/tefkah/actions-split-monorepo"
 LABEL homepage="https://github.com/johno/actions-split-monorepo"
