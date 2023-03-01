@@ -30,8 +30,6 @@ splitRepo({
   topics: Boolean(topics),
   description: Boolean(description),
   org,
-  gitFilterRepo,
-  source,
   root,
 })
 

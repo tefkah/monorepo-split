@@ -32,6 +32,12 @@ inputs:
   topics:
     description: "Whether or not to use the keywords field in the package.json file as the repository topics."
     required: false
+  force:
+    description: "Whether or not to split the repo even if there haven't been any changes in the directories to split."
+    required: false
+  root:
+    description: "The root directory of the monorepo."
+    required: false
 
 runs:
   using: "docker"
