@@ -22,6 +22,7 @@ export interface Options {
   help?: boolean
   source?: string
   root?: string
+  force?: boolean
   /**
    * Path to the git-filter-repo executable
    *
@@ -40,6 +41,7 @@ const warn = typeof core?.warning === "function" ? core.warning : console.warn
 export async function splitRepo(options: Options) {
   const {
     username,
+    force,
     token,
     match,
     filter,
@@ -213,7 +215,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
   `)
       log(touched)
 
-      if (!touched && !dev) {
+      if (!touched && !dev && !force) {
         log(
           `Skipping ${subrepoName} as it was not touched by the latest commit`
         )

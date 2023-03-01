@@ -16,10 +16,12 @@ const help = core.getInput("help")
 const gitFilterRepo = core.getInput("git-filter-repo")
 const source = core.getInput("source")
 const root = core.getInput("root")
+const force = core.getInput("force")
 
 splitRepo({
   username,
   token,
+  force: Boolean(force),
   match,
   filter,
   packageJson: Boolean(packageJson),

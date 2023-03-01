@@ -28,7 +28,6 @@
     "test": "tsx __tests__/split-repo.test.ts && jest",
     "jest": "jest",
     "build": "tsup src/entrypoint.ts && tsup src/split-repo.ts --format cjs,esm --dts",
-    "prepublish": "build",
     "postversion": "pnpm publish --access public && git push && git push --tags"
   },
   "keywords": [

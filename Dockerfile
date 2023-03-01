@@ -5,7 +5,8 @@ RUN apt-get update &&\
 
 RUN curl -sL https://deb.nodesource.com/setup_18.x -o /tmp/nodesource_setup.sh | bash
 
-RUN apt-get install nodejs -y
+RUN apt-get install nodejs -y &&\
+    apt-get install npm -y
 
 LABEL repository="https://github.com/tefkah/actions-split-monorepo"
 LABEL homepage="https://github.com/johno/actions-split-monorepo"
@@ -26,8 +27,12 @@ RUN git config --system --add safe.directory /tmp/monorepo_split/build_directory
 
 RUN git config --global init.defaultBranch main
 
-COPY git-filter-repo git-filter-repo
-COPY dist/entrypoint.js entrypoint.js
+COPY git-filter-repo /git-filter-repo
+COPY dist/entrypoint.js /entrypoint.js
+COPY package.json /package.json
+
+RUN node -v
+RUN npm install
 
 
 RUN chmod +x entrypoint.js
