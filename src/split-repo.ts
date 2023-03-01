@@ -256,17 +256,20 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
         const gfrCommand = `${
           dev ? path.join(base, gitFilterRepo) : "/git-filter-repo"
         }`
-        log("Git-filter-repo command: ", gfrCommand)
+
+        const filterRepoArgs = [
+          "--subdirectory-filter",
+          subrepoDir,
+          "--force",
+          "--source",
+          path.join(base, source ?? ".git"),
+          "--target",
+          path.join(base, subrepoDir, ".git"),
+        ]
+
+        log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`)
         const fitlerRepo = await PythonShell.run(gfrCommand, {
-          args: [
-            "--subdirectory-filter",
-            subrepoDir,
-            "--force",
-            "--source",
-            path.join(base, source ?? ".git"),
-            "--target",
-            path.join(base, subrepoDir, ".git"),
-          ],
+          args: filterRepoArgs,
         })
 
         log(fitlerRepo)

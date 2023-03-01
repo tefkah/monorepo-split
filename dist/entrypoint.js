@@ -221,17 +221,18 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
           )}`}
 `);
           const gfrCommand = `${dev ? import_path.default.join(base, gitFilterRepo2) : "/git-filter-repo"}`;
-          log("Git-filter-repo command: ", gfrCommand);
+          const filterRepoArgs = [
+            "--subdirectory-filter",
+            subrepoDir,
+            "--force",
+            "--source",
+            import_path.default.join(base, source2 != null ? source2 : ".git"),
+            "--target",
+            import_path.default.join(base, subrepoDir, ".git")
+          ];
+          log(`Git-filter-repo command: ${gfrCommand}${filterRepoArgs.join(" ")}`);
           const fitlerRepo = yield import_python_shell.PythonShell.run(gfrCommand, {
-            args: [
-              "--subdirectory-filter",
-              subrepoDir,
-              "--force",
-              "--source",
-              import_path.default.join(base, source2 != null ? source2 : ".git"),
-              "--target",
-              import_path.default.join(base, subrepoDir, ".git")
-            ]
+            args: filterRepoArgs
           });
           log(fitlerRepo);
           log(out);
