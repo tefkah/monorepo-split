@@ -14,7 +14,6 @@ const metaJson: string | undefined = core.getInput("meta-json")
 const topics: boolean | undefined = core.getBooleanInput("topics")
 const description: boolean | undefined = core.getBooleanInput("description")
 const org: string | undefined = core.getInput("org")
-const help = core.getBooleanInput("help")
 const gitFilterRepo = core.getInput("git-filter-repo")
 const source = core.getInput("source")
 const root = core.getInput("root")
@@ -31,7 +30,6 @@ splitRepo({
   topics: Boolean(topics),
   description: Boolean(description),
   org,
-  help: Boolean(help),
   gitFilterRepo,
   source,
   root,

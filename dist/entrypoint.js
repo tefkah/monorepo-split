@@ -75,11 +75,11 @@ function splitRepo(options) {
       topics: topics2 = true,
       description: description2 = true,
       org: org2,
-      help: help2,
+      help,
       gitFilterRepo: gitFilterRepo2 = "/git-filter-repo",
       dev
     } = options;
-    if (help2) {
+    if (help) {
       log(`Usage: repo-split.ts <github repo url> <github username>
 Options:
 --username, string, github username
@@ -305,7 +305,6 @@ var metaJson = core2.getInput("meta-json");
 var topics = core2.getBooleanInput("topics");
 var description = core2.getBooleanInput("description");
 var org = core2.getInput("org");
-var help = core2.getBooleanInput("help");
 var gitFilterRepo = core2.getInput("git-filter-repo");
 var source = core2.getInput("source");
 var root = core2.getInput("root");
@@ -321,7 +320,6 @@ splitRepo({
   topics: Boolean(topics),
   description: Boolean(description),
   org,
-  help: Boolean(help),
   gitFilterRepo,
   source,
   root
