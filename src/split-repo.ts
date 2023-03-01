@@ -206,6 +206,20 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
       // remove eventual `meta` file from the path
       const subrepoName = path.basename(subrepoDir.replace(meta ?? "", ""))
 
+      // check if this repo is touched by the latest commit
+      const { stdout: touched } = await execAsync(`
+    cd ${base}
+    git log -1 --name-only ${path.join(base, subrepoDir)}
+  `)
+      log(touched)
+
+      if (!touched && !dev) {
+        log(
+          `Skipping ${subrepoName} as it was not touched by the latest commit`
+        )
+        return
+      }
+
       const metadata = meta
         ? JSON.parse(await fs.readFile(path.join(base, subrepo), "utf8"))
         : {}
