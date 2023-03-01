@@ -1,8 +1,8 @@
 FROM ubuntu
 RUN apt-get update &&\
-    apt-get install git &&\
-    apt-get install python &&\
-    apt-get install node
+    apt-get install git -y &&\
+    apt-get install python -y &&\
+    apt-get install node -y
 
 LABEL repository="https://github.com/tefkah/actions-split-monorepo"
 LABEL homepage="https://github.com/johno/actions-split-monorepo"
