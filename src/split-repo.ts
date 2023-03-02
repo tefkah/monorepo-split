@@ -1,5 +1,5 @@
 import * as core from "@actions/core"
-import github from "@actions/github"
+import * as github from "@actions/github"
 import { glob } from "glob"
 import { throttling } from "@octokit/plugin-throttling"
 import path from "path"
@@ -147,7 +147,7 @@ Options:
 
   log(existingRepos)
   const existingRepoNames = existingRepos?.data?.map((repo) => repo.name) ?? []
-  log(existingRepoNames)
+  log(existingRepoNames.join(", "))
 
   const globs = match.split(" ")
 
@@ -159,7 +159,7 @@ Options:
       )
     : await glob(globs, { cwd: base })
 
-  log(subrepos)
+  log(subrepos.join(", "))
 
   const fitleredSubrepos = filter
     ? subrepos.filter((subrepo) => {
@@ -342,6 +342,7 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
       cd ${path.join(base, subrepoDir)}
     git remote add origin https://${orgOrUser}:${token}@github.com/${orgOrUser}/${repoName}.git
     git push -u origin main --force
+    ls
 
     cd ${base}
     `)

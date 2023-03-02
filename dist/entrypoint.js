@@ -148,14 +148,14 @@ Options:
     });
     log(existingRepos);
     const existingRepoNames = (_b = (_a = existingRepos == null ? void 0 : existingRepos.data) == null ? void 0 : _a.map((repo) => repo.name)) != null ? _b : [];
-    log(existingRepoNames);
+    log(existingRepoNames.join(", "));
     const globs = match2.split(" ");
     const base = root2 ? import_path.default.join(process.cwd(), root2) : process.cwd();
     const subrepos = meta ? yield (0, import_glob.glob)(
       globs.map((glb) => `${glb}/${meta}`),
       { cwd: base }
     ) : yield (0, import_glob.glob)(globs, { cwd: base });
-    log(subrepos);
+    log(subrepos.join(", "));
     const fitleredSubrepos = filter2 ? subrepos.filter((subrepo) => {
       if (subrepo.match(filter2)) {
         core.debug(`Filtered out ${subrepo}`);
@@ -194,10 +194,6 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
     git log -1 --name-only ${import_path.default.join(base, subrepoDir)}
   `);
       log(touched);
-      if (!touched && !dev && !force2) {
-        log(`Skipping ${subrepoName} as it was not touched by the latest commit`);
-        return;
-      }
       const metadata = meta ? JSON.parse(yield import_promises.default.readFile(import_path.default.join(base, subrepo), "utf8")) : {};
       log(metadata);
       const {
@@ -206,6 +202,10 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
         keywords: metaTopics
       } = metadata;
       const repoName = metaName || subrepoName;
+      if (!touched && !dev && !force2 && existingRepoNames.includes(repoName)) {
+        log(`Skipping ${subrepoName} as it was not touched by the latest commit`);
+        return;
+      }
       log("base", base);
       log(subrepo, import_path.default.join(base, subrepoDir));
       try {
@@ -280,7 +280,10 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
         descriptionPromise = octokit.rest.repos.update({
           owner: orgOrUser,
           repo: repoName,
-          description: metaDescription
+          description: metaDescription,
+          has_issues: false,
+          has_projects: false,
+          has_wiki: false
         });
       }
       const [topicResponse, descriptionResponse] = yield Promise.all([
@@ -289,12 +292,15 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
       ]);
       try {
         const { stderr, stdout } = yield execAsync(`
+      cd ${import_path.default.join(base, subrepoDir)}
     git remote add origin https://${orgOrUser}:${token2}@github.com/${orgOrUser}/${repoName}.git
     git push -u origin main --force
+    ls
 
     cd ${base}
     `);
         log(stdout);
+        log(stderr);
       } catch (e) {
         log(e);
       }
