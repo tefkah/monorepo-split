@@ -255,7 +255,10 @@ git for-each-ref --format '%(refname:short)' refs/heads | grep -v "main" | xargs
           org2 ? yield octokit.rest.repos.createInOrg({
             org: orgOrUser,
             name: repoName,
-            description: metaDescription
+            description: metaDescription,
+            has_issues: false,
+            has_projects: false,
+            has_wiki: false
           }) : yield octokit.rest.repos.createForAuthenticatedUser({
             name: repoName,
             description: metaDescription
